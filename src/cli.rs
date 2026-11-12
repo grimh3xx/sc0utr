@@ -1,10 +1,10 @@
 use clap::Parser;
 
-/// scour — agregador de recon (DNS / subdomínios / portas / whois).
+/// sc0utr — agregador de recon (DNS / subdomínios / portas / whois).
 ///
 /// Uso autorizado apenas. Rode só contra alvos com permissão explícita.
 #[derive(Parser, Debug, Clone)]
-#[command(name = "scour", version, about, long_about = None)]
+#[command(name = "sc0utr", version, about, long_about = None)]
 pub struct Cli {
     /// Alvo: domínio (exemplo.com) ou IP.
     pub target: String,

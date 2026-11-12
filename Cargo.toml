@@ -1,15 +1,15 @@
 [package]
-name = "scour"
+name = "sc0utr"
 version = "0.1.0"
 edition = "2021"
 authors = ["grimh3xx"]
 description = "Agregador de recon para pentest autorizado: DNS, subdomínios, portas e whois com saída JSON."
 license = "MIT"
-repository = "https://github.com/grimh3xx/scour"
+repository = "https://github.com/grimh3xx/sc0utr"
 keywords = ["pentest", "recon", "dns", "osint", "subdomain"]
 
 [[bin]]
-name = "scour"
+name = "sc0utr"
 path = "src/main.rs"
 
 [dependencies]

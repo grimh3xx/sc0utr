@@ -1,4 +1,4 @@
-# scour
+# sc0utr
 
 Agregador de **recon** para pentest autorizado: DNS, subdomínios, portas e
 whois num comando só, com **saída JSON limpa** pra pipar no `jq`/Elastic.
@@ -15,9 +15,9 @@ whois num comando só, com **saída JSON limpa** pra pipar no `jq`/Elastic.
 
 ## Uso
 ```sh
-scour exemplo.com -A -o recon.json
-scour exemplo.com --subs --wordlist subs.txt -c 400
-scour 10.0.0.5 --ports --port-list 22,80,443,3389
+sc0utr exemplo.com -A -o recon.json
+sc0utr exemplo.com --subs --wordlist subs.txt -c 400
+sc0utr 10.0.0.5 --ports --port-list 22,80,443,3389
 ```
 
 ## Build
