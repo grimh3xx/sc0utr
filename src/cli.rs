@@ -1,68 +1,69 @@
 use clap::Parser;
 
-/// sc0utr — agregador de recon (DNS / subdomínios / portas / whois).
+/// sc0utr — recon aggregator (DNS / subdomains / ports / whois).
 ///
-/// Uso autorizado apenas. Rode só contra alvos com permissão explícita.
+/// Authorised use only. Run only against targets you have explicit permission
+/// to test.
 #[derive(Parser, Debug, Clone)]
 #[command(name = "sc0utr", version, about, long_about = None)]
 pub struct Cli {
-    /// Alvo: domínio (exemplo.com) ou IP.
+    /// Target: a domain (example.com) or an IP.
     pub target: String,
 
-    /// Roda todos os módulos.
+    /// Run every module.
     #[arg(short = 'A', long)]
     pub all: bool,
 
-    /// Resolução DNS (A/AAAA/MX/NS/TXT/SOA).
+    /// DNS resolution (A/AAAA/MX/NS/TXT/SOA).
     #[arg(long)]
     pub dns: bool,
 
-    /// Brute de subdomínios (usa wordlist embutida ou --wordlist).
+    /// Subdomain brute force (built-in wordlist or --wordlist).
     #[arg(long)]
     pub subs: bool,
 
-    /// Arquivo de wordlist para subdomínios (um por linha).
+    /// Wordlist file for subdomains (one per line).
     #[arg(long)]
     pub wordlist: Option<String>,
 
-    /// Scan de portas comuns (connect scan + banner).
+    /// Port scan of common ports (connect scan + banner grab).
     #[arg(long)]
     pub ports: bool,
 
-    /// Lista de portas custom, ex: 22,80,443,8080 (padrão: top comuns).
+    /// Custom port list, e.g. 22,80,443,8080 (default: common top ports).
     #[arg(long)]
     pub port_list: Option<String>,
 
-    /// Consulta whois (porta 43, segue referral do IANA).
+    /// Whois lookup (port 43, follows the IANA referral).
     #[arg(long)]
     pub whois: bool,
 
-    /// Concorrência máxima.
+    /// Max concurrency.
     #[arg(short, long, default_value_t = 200)]
     pub concurrency: usize,
 
-    /// Timeout por operação de rede (ms).
+    /// Per-operation network timeout (ms).
     #[arg(long, default_value_t = 3000)]
     pub timeout: u64,
 
-    /// Grava resultado JSON no arquivo.
+    /// Write the JSON report to a file.
     #[arg(short, long)]
     pub output: Option<String>,
 
-    /// Silencia o progresso no stderr.
+    /// Silence progress on stderr.
     #[arg(short, long)]
     pub quiet: bool,
 }
 
 impl Cli {
-    /// Se nenhum módulo foi escolhido, roda um perfil padrão sensato.
+    /// If no module was selected, fall back to a sensible default profile.
     pub fn resolved_modules(&self) -> (bool, bool, bool, bool) {
         if self.all {
             return (true, true, true, true);
         }
         let any = self.dns || self.subs || self.ports || self.whois;
         if !any {
-            // padrão: dns + whois (rápido, não intrusivo)
+            // default: dns + whois (fast, non-intrusive)
             (true, false, false, true)
         } else {
             (self.dns, self.subs, self.ports, self.whois)

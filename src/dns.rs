@@ -18,7 +18,14 @@ async fn query(r: &TokioAsyncResolver, name: &str, rt: RecordType) -> Vec<String
     }
 }
 
-/// Coleta registros DNS de um domínio.
+/// Order-preserving dedup (A/NS glue frequently repeats).
+fn dedup(mut v: Vec<String>) -> Vec<String> {
+    let mut seen = std::collections::HashSet::new();
+    v.retain(|x| seen.insert(x.clone()));
+    v
+}
+
+/// Collects DNS records for a domain.
 pub async fn forward(r: &TokioAsyncResolver, domain: &str) -> DnsResult {
     let (a, aaaa, mx, ns, txt, soa) = tokio::join!(
         query(r, domain, RecordType::A),
@@ -29,20 +36,31 @@ pub async fn forward(r: &TokioAsyncResolver, domain: &str) -> DnsResult {
         query(r, domain, RecordType::SOA),
     );
     DnsResult {
-        a,
-        aaaa,
-        mx,
-        ns,
-        txt,
+        a: dedup(a),
+        aaaa: dedup(aaaa),
+        mx: dedup(mx),
+        ns: dedup(ns),
+        txt: dedup(txt),
         soa: soa.into_iter().next(),
     }
 }
 
-/// PTR reverso quando o alvo é um IP.
+/// Reverse PTR when the target is an IP.
 pub async fn reverse(r: &TokioAsyncResolver, ip: IpAddr) -> DnsResult {
     let mut out = DnsResult::default();
     if let Ok(lk) = r.reverse_lookup(ip).await {
         out.ns = lk.iter().map(|n| n.to_string()).collect();
     }
     out
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::dedup;
+    #[test]
+    fn dedup_preserves_first_seen_order() {
+        let got = dedup(vec!["b".into(), "a".into(), "b".into(), "a".into()]);
+        assert_eq!(got, vec!["b".to_string(), "a".to_string()]);
+    }
 }

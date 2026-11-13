@@ -17,7 +17,7 @@ async fn ask(server: &str, query: &str, to: Duration) -> Result<String> {
     Ok(out)
 }
 
-/// Consulta IANA e segue o `refer:` para o servidor autoritativo.
+/// Queries IANA and follows the `refer:` to the authoritative server.
 pub async fn lookup(target: &str, to: Duration) -> Result<String> {
     let root = ask(IANA, target, to).await?;
     let refer = root

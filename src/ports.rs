@@ -17,7 +17,7 @@ async fn probe(ip: IpAddr, port: u16, to: Duration) -> PortResult {
     let addr = (ip, port);
     match timeout(to, TcpStream::connect(addr)).await {
         Ok(Ok(mut stream)) => {
-            // tenta ler banner curto sem enviar nada (serviços que falam primeiro)
+            // try to read a short banner without sending anything (services that speak first)
             let mut buf = [0u8; 256];
             let banner = match timeout(Duration::from_millis(1200), stream.read(&mut buf)).await {
                 Ok(Ok(n)) if n > 0 => {

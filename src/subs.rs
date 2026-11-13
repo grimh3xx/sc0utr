@@ -3,7 +3,7 @@ use hickory_resolver::TokioAsyncResolver;
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 
-/// Wordlist mínima embutida; use --wordlist para algo sério.
+/// Minimal built-in wordlist; use --wordlist for anything serious.
 pub const BUILTIN: &[&str] = &[
     "www", "mail", "ftp", "dev", "staging", "stage", "test", "api", "admin",
     "portal", "vpn", "remote", "git", "gitlab", "jenkins", "ci", "db", "sql",

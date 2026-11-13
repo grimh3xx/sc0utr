@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
     let resolver = Arc::new(dns::resolver());
 
     if do_dns {
-        info!(cli.quiet, "DNS: resolvendo {}", cli.target);
+        info!(cli.quiet, "DNS: resolving {}", cli.target);
         let res = match target_ip {
             Some(ip) => dns::reverse(&resolver, ip).await,
             None => dns::forward(&resolver, &cli.target).await,
@@ -42,16 +42,16 @@ async fn main() -> anyhow::Result<()> {
     }
 
     if do_whois {
-        info!(cli.quiet, "WHOIS: consultando {}", cli.target);
+        info!(cli.quiet, "WHOIS: querying {}", cli.target);
         match whois::lookup(&cli.target, to).await {
             Ok(w) => report.whois = Some(w),
-            Err(e) => info!(cli.quiet, "whois falhou: {e}"),
+            Err(e) => info!(cli.quiet, "whois failed: {e}"),
         }
     }
 
     if do_subs {
         if target_ip.is_some() {
-            info!(cli.quiet, "subs: alvo é IP, pulando brute de subdomínio");
+            info!(cli.quiet, "subs: target is an IP, skipping subdomain brute force");
         } else {
             let words: Vec<String> = match &cli.wordlist {
                 Some(path) => std::fs::read_to_string(path)?
@@ -61,15 +61,15 @@ async fn main() -> anyhow::Result<()> {
                     .collect(),
                 None => subs::BUILTIN.iter().map(|s| s.to_string()).collect(),
             };
-            info!(cli.quiet, "subs: testando {} candidatos", words.len());
+            info!(cli.quiet, "subs: testing {} candidates", words.len());
             report.subdomains =
                 subs::brute(resolver.clone(), &cli.target, &words, cli.concurrency).await;
-            info!(cli.quiet, "subs: {} encontrados", report.subdomains.len());
+            info!(cli.quiet, "subs: {} found", report.subdomains.len());
         }
     }
 
     if do_ports {
-        // escolhe um IP alvo: o próprio se for IP, senão o primeiro A do DNS
+        // pick a target IP: the target itself if it is an IP, else the first A record
         let scan_ip: Option<IpAddr> = target_ip.or_else(|| {
             report
                 .dns
@@ -86,11 +86,11 @@ async fn main() -> anyhow::Result<()> {
                         .collect(),
                     None => ports::TOP_PORTS.to_vec(),
                 };
-                info!(cli.quiet, "portas: scaneando {} em {} portas", ip, plist.len());
+                info!(cli.quiet, "ports: scanning {} across {} ports", ip, plist.len());
                 report.ports = ports::scan(ip, &plist, cli.concurrency, to).await;
-                info!(cli.quiet, "portas: {} abertas", report.ports.len());
+                info!(cli.quiet, "ports: {} open", report.ports.len());
             }
-            None => info!(cli.quiet, "portas: sem IP resolvível, pulando"),
+            None => info!(cli.quiet, "ports: no resolvable IP, skipping"),
         }
     }
 
@@ -98,7 +98,7 @@ async fn main() -> anyhow::Result<()> {
     match &cli.output {
         Some(path) => {
             std::fs::write(path, &json)?;
-            info!(cli.quiet, "salvo em {path}");
+            info!(cli.quiet, "saved to {path}");
         }
         None => println!("{json}"),
     }
