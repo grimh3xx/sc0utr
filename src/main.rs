@@ -87,7 +87,7 @@ async fn main() -> anyhow::Result<()> {
                     None => ports::TOP_PORTS.to_vec(),
                 };
                 info!(cli.quiet, "ports: scanning {} across {} ports", ip, plist.len());
-                report.ports = ports::scan(ip, &plist, cli.concurrency, to).await;
+                report.ports = ports::scan(ip, &plist, cli.concurrency, to, cli.rate).await;
                 info!(cli.quiet, "ports: {} open", report.ports.len());
             }
             None => info!(cli.quiet, "ports: no resolvable IP, skipping"),

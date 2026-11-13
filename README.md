@@ -25,7 +25,7 @@ brute force, connect-scan with banner grab, and whois following the IANA
 | `--dns` | A/AAAA/MX/NS/TXT/SOA (or reverse PTR when the target is an IP) |
 | `--subs` | subdomain brute force (built-in wordlist or `--wordlist`) |
 | `--ports` | connect scan of common ports + banner (`--port-list` for custom) |
-| `--whois` | port-43 lookup following the IANA referral |
+| `--whois` | port-43 lookup following the IANA referral **chain** (multi-hop) |
 | `-A/--all` | everything. With no flags: `dns` + `whois` (fast, non-intrusive) |
 
 ## Usage
@@ -33,7 +33,7 @@ brute force, connect-scan with banner grab, and whois following the IANA
 ```sh
 sc0utr example.com -A -o recon.json
 sc0utr example.com --subs --wordlist subs.txt -c 400
-sc0utr 10.0.0.5 --ports --port-list 22,80,443,3389
+sc0utr 10.0.0.5 --ports --port-list 22,80,443,3389 --rate 50   # cap 50 conn/s
 ```
 
 Target is a domain or an IP. `-c` sets concurrency, `--timeout` the per-op timeout.

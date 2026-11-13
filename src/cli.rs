@@ -46,6 +46,10 @@ pub struct Cli {
     #[arg(long, default_value_t = 3000)]
     pub timeout: u64,
 
+    /// Max port-scan connections per second (0 = unlimited).
+    #[arg(long, default_value_t = 0)]
+    pub rate: u32,
+
     /// Write the JSON report to a file.
     #[arg(short, long)]
     pub output: Option<String>,
